@@ -10,6 +10,7 @@ RUN npm run build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
+RUN apk add --no-cache ca-certificates && update-ca-certificates
 RUN addgroup -S app && adduser -S -G app -u 10001 app
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/node_modules ./node_modules
