@@ -1,6 +1,8 @@
-FROM node:20-alpine AS build
+FROM node:20-bookworm-slim AS build
 WORKDIR /app
-RUN apk add --no-cache python3 make g++
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends python3 make g++ ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json* ./
 RUN npm install
 COPY tsconfig.json ./
@@ -8,10 +10,13 @@ COPY src ./src
 COPY config ./config
 RUN npm run build
 
-FROM node:20-alpine AS runner
+FROM node:20-bookworm-slim AS runner
 WORKDIR /app
-RUN apk add --no-cache ca-certificates && update-ca-certificates
-RUN addgroup -S app && adduser -S -G app -u 10001 app
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ca-certificates \
+  && update-ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+RUN groupadd -g 101 app && useradd -u 10001 -g 101 -M -s /usr/sbin/nologin app
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
