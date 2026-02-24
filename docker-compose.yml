@@ -1,0 +1,36 @@
+services:
+  mirror:
+    build: .
+    environment:
+      PORT: 8085
+      HOST: 0.0.0.0
+      MIRROR_PUBLIC_BASE_URL: ${MIRROR_PUBLIC_BASE_URL:-https://mirror.orizzi.io}
+      MIRROR_INTERNAL_TOKEN: ${MIRROR_INTERNAL_TOKEN:?set MIRROR_INTERNAL_TOKEN}
+      MIRROR_ALLOWLIST_PATH: /app/config/allowlist.json
+      MIRROR_DB_PATH: /data/mirror.db
+      MIRROR_CACHE_DIR: /cache
+      MIRROR_CACHE_TTL_SECONDS: ${MIRROR_CACHE_TTL_SECONDS:-7200}
+      MIRROR_CACHE_MAX_BYTES: ${MIRROR_CACHE_MAX_BYTES:-1073741824}
+      MIRROR_UPSTREAM_TIMEOUT_MS: ${MIRROR_UPSTREAM_TIMEOUT_MS:-12000}
+      MIRROR_MAX_HTML_BYTES: ${MIRROR_MAX_HTML_BYTES:-5242880}
+      MIRROR_MAX_BINARY_BYTES: ${MIRROR_MAX_BINARY_BYTES:-26214400}
+      MIRROR_ENABLE_HTTP: ${MIRROR_ENABLE_HTTP:-false}
+      MIRROR_DISABLE_SERVICE: ${MIRROR_DISABLE_SERVICE:-false}
+      MIRROR_LOG_FILE: /data/mirror-events.log
+    ports:
+      - "127.0.0.1:8085:8085"
+    volumes:
+      - ./data:/data
+      - ./cache:/cache
+      - ./config:/app/config:rw
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 256
+    mem_limit: 512m
+    mem_reservation: 128m
+    restart: unless-stopped

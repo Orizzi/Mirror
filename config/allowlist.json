@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "id": "example-com",
+      "host": "example.com",
+      "allowSubdomains": true,
+      "schemes": ["https"],
+      "enabled": true,
+      "label": "Example (sample)"
+    }
+  ]
+}
