@@ -23,6 +23,7 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/config ./config
 RUN mkdir -p /data /cache && chown -R app:app /app /data /cache
 ENV NODE_ENV=production
+ENV NODE_OPTIONS=--use-openssl-ca
 EXPOSE 8085
 USER app
 CMD ["node", "dist/server.js"]
